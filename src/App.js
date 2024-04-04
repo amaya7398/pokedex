@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 function App() {
 
   const [pokes, setPokes] = useState([])
-  const [sprite, setSprite] = useState('')
+  const [pokemon, setPokemon] = useState('')
 
   const fetchData = () => {
     fetch('https://pokeapi.co/api/v2/pokemon?limit=151')
@@ -13,18 +13,13 @@ function App() {
   }
 
   const displayAllPokemons = () => {
-    return <ul className='pokedex-info-pokes'>
-      {
-        pokes.map((pk, idx) =>
-          <li key={idx} onClick={displayPokemon} >{pk.name}</li>)
-      }
-    </ul>
+    return 
   }
 
   const displayPokemon = async (event) => {
     const namePoke = event.target.innerText
     const spritesLink = await getPokemonByName(namePoke)
-    setSprite(spritesLink)
+    setPokemon(spritesLink)
   }
 
   const getPokemonByName = async (name) => {
@@ -35,21 +30,40 @@ function App() {
   }
 
   const spritePokemon = () => {
-    const spriteSrc = sprite === ''
+    return pokemon === ''
       ? "https://img.itch.zone/aW1nLzk4ODIxOTQuZ2lm/original/NigZHO.gif"
-      : sprite
-    return <img src={spriteSrc} alt="pokemon sprite" srcSet="" />
+      : pokemon
   }
 
   return (
-    <div className="pokedex">
-      <img className='pokedex-logo' src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/International_Pok%C3%A9mon_logo.svg/1200px-International_Pok%C3%A9mon_logo.svg.png" alt="" srcSet="" />
-      <div className="pokedex-display">{spritePokemon()}</div>
-      <button className='pokedex-button' onClick={fetchData}>Catch all pokemon</button>
-      <div className="pokedex-info">
-        {displayAllPokemons()}
+    <div className="consola">
+
+      <div className="pokedex parte-izquierda">
+        <img className='pokedex-logo' src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/International_Pok%C3%A9mon_logo.svg/1200px-International_Pok%C3%A9mon_logo.svg.png" alt="" srcSet="" />
+        <div className="pokedex-display">
+          <img src={spritePokemon()} alt="pokemon sprite" srcSet="" />
+        </div>
+        <button className='pokedex-button' onClick={fetchData}>Catch all pokemon</button>
+        <div className="pokedex-info">
+          <ul className='pokedex-info-pokes'>
+            {
+              pokes.map((pk, idx) =>
+                <li key={idx} onClick={displayPokemon} >{pk.name}</li>)
+            }
+          </ul>
+        </div>
+        <div className="pokedex-buttons-selection"></div>
       </div>
-      <div className="pokedex-buttons-selection"></div>
+
+      {/* TODO:
+      Cambiar esta sección, para desplegar información del pokemon seleccionado.
+      Ya sean sus ataques o una gráfica de teleraña para sus stats. */}
+      <div className="pokedex parte-derecha">
+        <img className='pokedex-logo' src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/International_Pok%C3%A9mon_logo.svg/1200px-International_Pok%C3%A9mon_logo.svg.png" alt="" srcSet="" />
+        <div className="pokedex-display">
+          <img src={spritePokemon()} alt="pokemon sprite" srcSet="" />
+        </div>
+      </div>
 
     </div>
   );
