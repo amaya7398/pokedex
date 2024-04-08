@@ -1,0 +1,129 @@
+.consola {
+    display: flex;
+    justify-content: center;
+}
+
+.pokedex {
+    background-color: red;
+    max-width: 300px;
+    height: 700px;
+    max-height: 700px;
+    border: 5px solid black;
+    border-radius: 2em;
+    padding: 1em;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 1em;
+}
+
+/* Pokedex && parte-izquierda */
+.pokedex.parte-izquierda {}
+
+/* Pokedex && parte-derecha */
+.pokedex.parte-derecha {}
+
+.pokedex.parte-derecha .pokedex-logo {
+    visibility: hidden;
+}
+
+.pokedex-logo {
+    width: 100%;
+}
+
+.pokedex-display {
+    width: 250px;
+    height: 200px;
+    border: solid white 0.5em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pokedex-display.display-OFF {
+    background-color: #272736;
+}
+
+.pokedex-display.display-ON {
+    background-color: #82c166;
+}
+
+.pokedex-display img {
+    object-fit: contain;
+    height: 100%;
+    max-width: 250px;
+    max-height: 200px;
+}
+
+.pokedex-button {
+    margin: 1em;
+    padding: 0.5em 1em;
+    font-family: cursive;
+}
+
+.pokedex-info {
+    border: 0.5em solid #272736;
+    background-color: #272736;
+    color: antiquewhite;
+    width: 200px;
+    height: 220px;
+    overflow: auto;
+    scrollbar-width: thin;
+    scrollbar-color: white rgba(0, 0, 0, 0.75);
+}
+
+.pokedex-info::-webkit-scrollbar {
+    -webkit-appearance: none;
+}
+
+.pokedex-info::-webkit-scrollbar:vertical {
+    width: 10px;
+}
+
+.pokedex-info::-webkit-scrollbar-button:increment,
+.pokedex-info::-webkit-scrollbar-button {
+    display: none;
+}
+
+.pokedex-info-pokes {
+    list-style: none;
+    padding: 0px;
+}
+
+.pokedex-info-pokes li {
+    text-align: center;
+    cursor: pointer;
+    padding: 3px;
+}
+
+/* ############################################### */
+/* Pokedex && parte-derecha */
+.pokedex.parte-derecha .info-pokemon {
+    /* display: flsex; */
+    flex-flow: column;
+}
+
+.info-pokemon .pokemonName {
+    font-size: xx-large;
+}
+
+.info-pokemon .pokemonTypes {
+    display: flex;
+}
+
+.info-pokemon .pokemonTypes .type {
+    border-radius: 25px;
+    padding: 5px 30px;
+    border: 1px solid black;
+    margin: 2.5px;
+    color: white;
+}
+
+.info-pokemon .pokemonWeight {
+    margin: 5px;
+}
+
+.info-pokemon .pokermonHeight {
+    /* margin: 10px; */
+}
