@@ -46,7 +46,7 @@
 }
 
 .pokedex-display.display-ON {
-    background-color: #82c166;
+    background-color: #ecf5e8;
 }
 
 .pokedex-display img {
@@ -54,6 +54,9 @@
     height: 100%;
     max-width: 250px;
     max-height: 200px;
+}
+.pokedex-display.grafico-stats {
+    height: 250px;
 }
 
 .pokedex-button {
@@ -115,7 +118,7 @@
 .info-pokemon .pokemonTypes .type {
     border-radius: 25px;
     padding: 5px 30px;
-    border: 1px solid black;
+    /* border: 1px solid black; */
     margin: 2.5px;
     color: white;
 }

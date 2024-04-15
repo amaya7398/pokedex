@@ -1,17 +1,27 @@
 import './pokedex.css'
 import { getColorType } from '../pokemon-type-colours'
-import { useState } from 'react';
+
+import { useState, useEffect } from 'react';
+// imports for radar chart //CDN: import { Chart } from 'https://cdn.jsdelivr.net/npm/chart.js@4.4.2/+esm'
+import {
+    Chart as ChartJS, RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend
+} from "chart.js";
+import { Radar } from "react-chartjs-2"; //Doughnut,
 
 export default function Pokedex() {
-    const defaultPokemon = { id: 0, name: "---", types: [], stats: [], weight: 0, height: 0, abilities: "---", sprite: "https://img.itch.zone/aW1nLzk4ODIxOTQuZ2lm/original/NigZHO.gif" }
+    const defaultPokemon = { id: 0, name: "", types: [], stats: { pokemon: [], labels: [], data: [] }, weight: 0, height: 0, abilities: "---", sprite: "https://img.itch.zone/aW1nLzk4ODIxOTQuZ2lm/original/NigZHO.gif" }
 
     const [pokes, setPokes] = useState([])
     const [pokemon, setPokemon] = useState(defaultPokemon)
     const [statusDisplay, setStatusDisplay] = useState(false)
 
+    useEffect(() => {
+        ChartJS.register(RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
+    }, [])
+
     const fetchData = () => {
-        setPokemon(defaultPokemon)
         setStatusDisplay(false)
+        setPokemon(defaultPokemon)
         fetch('https://pokeapi.co/api/v2/pokemon?limit=151')
             .then(res => res.json())
             .then(pokes => setPokes(pokes.results))
@@ -21,36 +31,73 @@ export default function Pokedex() {
         const namePoke = event.target.innerText
         const { id, name, sprite, types, stats, height, weight } = await getPokemonByName(namePoke)
 
-        setPokemon({ ...pokemon, id, sprite, name, types, stats, height, weight })
         setStatusDisplay(true)
-        console.log({ pokemon })
+        setPokemon({ ...pokemon, id, sprite, name, types, stats, height, weight })
     }
 
     const getPokemonByName = async (name) => {
         const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${name}`)
         const data = await response.json()
-
-        console.log(data)
-
         const id = data.id
         const spriteLink = data.sprites.other.showdown.front_default
         const types = data.types.map(type => type.type.name)
         const weight = data.weight
         const height = data.height
-        const stats = data.stats
-        // [] map( x => x.stat.name x.base_stat)
 
-        return { id, name, sprite: spriteLink, types, stats, height, weight }
+        // const statsMap = JSON.parse(JSON.stringify({ ...pokemon.stats }))
+        const statsMap = { pokemon: [], labels: [], data: [] }
+        data.stats.map(statItem => {
+            const label = statItem.stat.name
+            const stat = statItem.base_stat
+            // ESTRUCTURA: {labels: [aquí push, label], data:[aquí push, stat]}
+            statsMap.labels.push(label)
+            statsMap.data.push(stat)
+            // ESTRUCTURA: [{"hp": 45}, {"defense":73}, ... ,{"speed":123}]
+            statsMap.pokemon.push({ [label]: stat })
+            return true
+        })
+        return { id, name, sprite: spriteLink, types, stats: statsMap, height, weight }
     }
 
     const getStatusDisplay = () => {
         return statusDisplay ? "display-ON" : "display-OFF"
     }
+    const ifOn_DisplayThis = (toDisplay) => {
+        return statusDisplay ? toDisplay : ""
+    }
+
+    const getRadarChartData = (pokemonStats) => {
+        const labels = pokemonStats.labels
+        const data = pokemonStats.data
+        const dataForChart = {
+            labels, datasets: [{
+                data, label: `${pokemon.name}'s Stats`,
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1,
+            }]
+        }
+        return dataForChart
+    }
+
+    const getRadarChartOptions = () => {
+        return {
+            plugins: { legend: { labels: { font: { size: 15 } } } },
+            scales: {
+                r: {
+                    min: 0, max: 150, ticks: {
+                        backdropPadding: -5, count: 4, backdropColor: "rgba(0,0,0,0)", font: { size: 8 },
+                        callback: function (value, index, ticks) { return "        " + value }
+                    },
+                }
+            }
+        }
+    }
+
 
 
     return (
         <div className="consola">
-
             <div className="pokedex parte-izquierda">
                 <img className='pokedex-logo' src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/International_Pok%C3%A9mon_logo.svg/1200px-International_Pok%C3%A9mon_logo.svg.png" alt="" srcSet="" />
                 <div className={"pokedex-display " + getStatusDisplay()}>
@@ -68,14 +115,11 @@ export default function Pokedex() {
                 <div className="pokedex-buttons-selection"></div>
             </div>
 
-            {/* TODO:
-      Cambiar esta sección, para desplegar información del pokemon seleccionado.
-      Ya sean sus ataques o una gráfica de teleraña para sus stats. */}
             <div className="pokedex parte-derecha">
                 <img className='pokedex-logo' src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/International_Pok%C3%A9mon_logo.svg/1200px-International_Pok%C3%A9mon_logo.svg.png" alt="" srcSet="" />
 
                 <div className={"info-pokemon pokedex-display " + getStatusDisplay()}>
-                    <div className="pokemonName">{pokemon.name}</div>
+                    <div className="pokemonName">{ifOn_DisplayThis(pokemon.name)}</div>
                     <div className="pokemonTypes">
                         {
                             pokemon.types.map((type, idx) =>
@@ -83,18 +127,18 @@ export default function Pokedex() {
                             )
                         }
                     </div>
-                    <div className="pokemonWeight">{"Weight " + pokemon.weight}</div>
-                    <div className="pokemonHeight">{"Height " + pokemon.height}</div>
+                    <div className="pokemonWeight">{ifOn_DisplayThis("Weight: " + pokemon.weight)}</div>
+                    <div className="pokemonHeight">{ifOn_DisplayThis("Height: " + pokemon.height)}</div>
                 </div>
 
                 <div className={"grafico-stats pokedex-display " + getStatusDisplay()}>
-                    <div className="grafico-estrella">
-                        Color #82c166
-                    </div>
+                    {
+                        ifOn_DisplayThis(
+                            <Radar data={getRadarChartData(pokemon.stats)} options={getRadarChartOptions()} />
+                        )
+                    }
                 </div>
-
             </div>
-
         </div>
     );
 }
